@@ -1,4 +1,4 @@
-NAME      = hello_world
+NAME      = app
 
 # Source files directory
 SRCS      = $(wildcard *.c)
