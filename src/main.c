@@ -1,5 +1,5 @@
 #include <stm32f401xe.h>
-
+#include <utilities.h>
 
 /*
  * The green LED is connected to port A5,
@@ -7,18 +7,6 @@
  */
 #define LED_GPIO        GPIOA
 #define LED_PIN         5
-
-
-/**
- * Quick 'n' dirty delay
- *
- * @param time the larger it is the longer it will block
- */
-static void delay(unsigned time) {
-    for (unsigned i=0; i<time; i++)
-        for (volatile unsigned j=0; j<20000; j++);
-}
-
 
 /**
  * Hello world blinky program
