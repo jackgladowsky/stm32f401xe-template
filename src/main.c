@@ -1,4 +1,5 @@
 #include <stm32f401xe.h>
+#include <sys_clk_cfg.h>
 #include <stdio.h>
 #include <utilities.h>
 
@@ -15,6 +16,9 @@
  * @return never
  */
 int main(void) {
+
+    SystemClock_Config();
+
 
     /*
      * Turn on the GPIOA unit,
@@ -42,8 +46,6 @@ int main(void) {
          */
         LED_GPIO->BSRR = (1 << LED_PIN);
 
-        printf("LED ON");
-
         delay(200);
 
         /*
@@ -53,8 +55,6 @@ int main(void) {
          * -> see section 8.4.7 in the manual
          */
         LED_GPIO->BSRR = (1 << (LED_PIN + 16));
-
-        printf("LED OFF");
 
         delay(200);
     }
