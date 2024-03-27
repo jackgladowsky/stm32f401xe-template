@@ -1,62 +1,57 @@
-#include <stm32f401xe.h>
-#include <sys_clk_cfg.h>
-#include <stdio.h>
-#include <utilities.h>
+#include "stm32f401xe.h"
+//#include <stdio.h>
+#include "sys_clk_cfg.h"
+#include "gpio.h"
+#include "utilities.h"
 
 /*
- * The green LED is connected to port A5,
+ * The BUTTON,
  * -> see schematic of NUCLEO-F401RE board
  */
-#define LED_GPIO        GPIOA
-#define LED_PIN         5
+
+GPIO_PIN_CFG button_pin_cfg = {
+    .pin = 13, // PC13
+    .mode = GPIO_MODE_INPUT,
+    .otype = GPIO_OTYPE_PP,
+    .pull = GPIO_NOPULL,
+    .speed = GPIO_SPEED_LOW,
+    .alternate = 0 // Not used for basic output
+};
+
 
 /**
- * Hello world blinky program
+ * Main
  *
  * @return never
  */
 int main(void) {
 
-    SystemClock_Config();
+    GPIO_HNDL button_gpio_handle;
+    button_gpio_handle.gpiox = GPIOC; // Point to GPIOC port for PC13
+    button_gpio_handle.gpio_pin_config = button_pin_cfg; // Assign pin configuration
 
+    sys_clk_ntrl_cfg();
+    // sys_clk_hprf_cfg();
 
-    /*
-     * Turn on the GPIOA unit,
-     * -> see section 6.3.9 in the manual
-     */
-    RCC->AHB1ENR  |= RCC_AHB1ENR_GPIOAEN;
-
-
-    /*
-     * Set LED-Pin as output
-     * Note: For simplicity this assumes the pin was configured
-     * as input before, as it is when it comes out of reset.
-     * -> see section 8.4.1 in the manual
-     */
-    LED_GPIO->MODER |= (0b01 << (LED_PIN << 1));
-
+    gpio_init(&button_gpio_handle); // Initialize the GPIO pin for the button
 
     while(1) {
 
-        /*
-         * LED on (drive the pin high)
-         * A GPIO output pin is set to high by writing 1 to the
-         * corresponding bit in the lower half of the BSRR register
-         * -> see section 8.4.7 in the manual
-         */
-        LED_GPIO->BSRR = (1 << LED_PIN);
+        uint8_t state;
+        GPIO_ERR err = gpio_read_pin(GPIOC, 13, &state);
 
-        delay(200);
+        if (!err == GPIO_OK)
+        {
+            return 0;
+        }
 
-        /*
-         * LED off (drive the pin low)
-         * A GPIO output pin is set to low by writing 1 to the
-         * corresponding bit in the upper half of the BSRR register
-         * -> see section 8.4.7 in the manual
-         */
-        LED_GPIO->BSRR = (1 << (LED_PIN + 16));
+        if (state == 0)
+        {
 
-        delay(200);
+        }
+
+        delay(100);
+    
     }
 }
 
