@@ -5,19 +5,18 @@
 #include "utilities.h"
 
 /*
- * The BUTTON,
+ * The green LED is connected to port A5,
  * -> see schematic of NUCLEO-F401RE board
  */
 
-GPIO_PIN_CFG button_pin_cfg = {
-    .pin = 13, // PC13
-    .mode = GPIO_MODE_INPUT,
+GPIO_PIN_CFG led_pin_cfg = {
+    .pin = 5, // PA5
+    .mode = GPIO_MODE_OUTPUT,
     .otype = GPIO_OTYPE_PP,
     .pull = GPIO_NOPULL,
     .speed = GPIO_SPEED_LOW,
     .alternate = 0 // Not used for basic output
 };
-
 
 /**
  * Main
@@ -26,29 +25,19 @@ GPIO_PIN_CFG button_pin_cfg = {
  */
 int main(void) {
 
-    GPIO_HNDL button_gpio_handle;
-    button_gpio_handle.gpiox = GPIOC; // Point to GPIOC port for PC13
-    button_gpio_handle.gpio_pin_config = button_pin_cfg; // Assign pin configuration
+    GPIO_HNDL led_gpio_hndl;
+
+    led_gpio_hndl.gpiox = GPIOA;
+    led_gpio_hndl.gpio_pin_config = led_pin_cfg;
 
     sys_clk_ntrl_cfg();
     // sys_clk_hprf_cfg();
 
-    gpio_init(&button_gpio_handle); // Initialize the GPIO pin for the button
+    gpio_init(&led_gpio_hndl);
 
     while(1) {
 
-        uint8_t state;
-        GPIO_ERR err = gpio_read_pin(GPIOC, 13, &state);
-
-        if (!err == GPIO_OK)
-        {
-            return 0;
-        }
-
-        if (state == 0)
-        {
-
-        }
+        gpio_toggle_pin(GPIOA, 5);
 
         delay(100);
     
