@@ -52,7 +52,7 @@ BIN_NAME  = $(addprefix $(BUILDDIR), $(NAME))
 
 .PHONY: all clean install print_size
 
-all: $(BIN_NAME).elf $(BIN_NAME).bin $(BIN_NAME).s19 $(BIN_NAME).hex $(BIN_NAME).lst print_size
+all: $(BIN_NAME).elf $(BIN_NAME).bin $(BIN_NAME).s19 $(BIN_NAME).hex $(BIN_NAME).lst print_size post-build
 
 clean:
 	@echo "Cleaning up..."
@@ -63,6 +63,11 @@ install: $(BIN_NAME).hex
 	@echo "Programming device..."
 	@openocd -d0 -f board/st_nucleo_f4.cfg -c "program $<" -c "reset run" -c "shutdown"
 	@echo "Programming complete."
+
+post-build:
+	@echo "Cleaning up build files..."
+	@$(RM) $(OBJS) $(DEPS)
+	@echo "Build files cleaned."
 
 ###########################################
 # Internal Rules                          #
